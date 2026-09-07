@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIH26046 - AIIA Clinical Trials Dashboard &amp; Analytics</title>
 
+  <!-- Preload the two faces used above the fold so text paints once, not twice. -->
+  <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
@@ -78,6 +82,23 @@
         <button id="nav-ecrf" onclick="navigate('ecrf')">Ayurveda eCRF &amp; Signatures</button>
         <button id="nav-pharmacovigilance" onclick="navigate('pharmacovigilance')">Safety Alerts (AE)</button>
         <button id="nav-audit" onclick="navigate('audit')">Audit Trail &amp; Export</button>
+
+        <div class="nav-group-label">Extra</div>
+        <button id="nav-organizations" onclick="navigate('organizations')">Research Organizations</button>
+        <button id="nav-about" onclick="navigate('about')">About Us</button>
+        <button id="nav-feedback" onclick="navigate('feedback')">Feedback &amp; Support</button>
+
+        <div class="nav-group-label">Portal Links</div>
+        <a class="nav-link" href="https://main.ayush.gov.in/" target="_blank" rel="noopener noreferrer">
+          Ministry of Ayush <span class="nav-link-icon" aria-hidden="true">↗</span>
+        </a>
+        <a class="nav-link" href="https://namaste.ayush.gov.in/" target="_blank" rel="noopener noreferrer">
+          NAMASTE Portal <span class="nav-link-icon" aria-hidden="true">↗</span>
+        </a>
+        <a class="nav-link" href="https://www.cdisc.org/standards/foundational/sdtm" target="_blank" rel="noopener noreferrer">
+          CDISC SDTM Standards <span class="nav-link-icon" aria-hidden="true">↗</span>
+        </a>
+
         <button class="btn-logout" onclick="logout()">🔒 Sign Out</button>
       </nav>
     </aside>
@@ -92,24 +113,9 @@
       <section id="dashboard" class="page-section">
         <h1>Executive Clinical Trial Analytics</h1>
 
-        <div class="grid grid-kpi">
-          <div class="stat-card">
-            <small>Active Clinical Trials</small>
-            <h2 id="kpiActiveTrials" class="stat-navy">--</h2>
-          </div>
-          <div class="stat-card">
-            <small>Enrolled Subjects</small>
-            <h2 id="kpiTotalPatients" class="stat-blue">--</h2>
-          </div>
-          <div class="stat-card">
-            <small>Pending 21 CFR Signatures</small>
-            <h2 id="kpiPendingSignatures" class="stat-warn">--</h2>
-          </div>
-          <div class="stat-card">
-            <small>Open SAE Alerts</small>
-            <h2 id="kpiActiveSAE" class="stat-danger">--</h2>
-          </div>
-        </div>
+        <!-- Eight trial analytics tiles, rendered from /api/dashboard/metrics.
+             Order and content come from the API response. -->
+        <div class="metric-grid" id="metricGrid"></div>
 
         <div class="card">
           <h3>Active Trial Cohorts &amp; Recruitment Targets</h3>
@@ -143,6 +149,54 @@
       <section id="patients" class="page-section">
         <h1>Participant Onboarding &amp; Blinding</h1>
         <div class="grid">
+          <!-- Trial registration. Hidden for roles that cannot create
+               protocols; the API enforces the same rule (PI/ADMIN). -->
+          <div class="card grid-span-2" id="trialFormCard">
+            <h3>Register New Clinical Trial</h3>
+            <form id="trialForm">
+              <div class="field-row">
+                <div class="form-group">
+                  <label for="trialCode">Trial Code:</label>
+                  <input type="text" id="trialCode" required placeholder="e.g., AYU-T104">
+                </div>
+                <div class="form-group">
+                  <label for="trialPhase">Phase:</label>
+                  <select id="trialPhase" required>
+                    <option value="I">Phase I</option>
+                    <option value="II" selected>Phase II</option>
+                    <option value="III">Phase III</option>
+                    <option value="IV">Phase IV</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="trialStatus">Status:</label>
+                  <select id="trialStatus" required>
+                    <option value="ACTIVE" selected>Active</option>
+                    <option value="OPEN">Open</option>
+                    <option value="CLOSED">Closed</option>
+                    <option value="COMPLETED">Completed</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="trialTitle">Title:</label>
+                <input type="text" id="trialTitle" required placeholder="e.g., Ashwagandha Stress Reduction Trial">
+              </div>
+              <div class="field-row">
+                <div class="form-group">
+                  <label for="trialTarget">Target Enrollment:</label>
+                  <input type="number" id="trialTarget" min="1" placeholder="e.g., 100">
+                </div>
+                <div class="form-group">
+                  <label for="trialStartDate">Start Date:</label>
+                  <input type="date" id="trialStartDate">
+                </div>
+              </div>
+              <button type="submit" class="btn-submit">Register Clinical Trial</button>
+              <p class="form-note">Target enrollment drives the estimated completion metric on the dashboard.</p>
+            </form>
+          </div>
+
           <div class="card">
             <h3>Register New Participant</h3>
             <form id="patientForm">
@@ -315,6 +369,180 @@
         </table>
       </section>
 
+      <!-- Research Organizations -->
+      <section id="organizations" class="page-section">
+        <h1>Research Organizations</h1>
+
+        <div class="card grid-span-2" id="orgFormCard">
+          <h3>Register Research Organization</h3>
+          <form id="orgForm">
+            <div class="field-row">
+              <div class="form-group">
+                <label for="orgCode">Organization Code:</label>
+                <input type="text" id="orgCode" required placeholder="e.g., AIIA-DEL">
+              </div>
+              <div class="form-group">
+                <label for="orgType">Type:</label>
+                <select id="orgType" required>
+                  <option value="ACADEMIC">Academic Institute</option>
+                  <option value="HOSPITAL">Hospital</option>
+                  <option value="CRO">Contract Research Organization</option>
+                  <option value="GOVERNMENT">Government Body</option>
+                  <option value="INDUSTRY">Industry Sponsor</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="orgStatus">Status:</label>
+                <select id="orgStatus" required>
+                  <option value="ACTIVE" selected>Active</option>
+                  <option value="INACTIVE">Inactive</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="orgName">Organization Name:</label>
+              <input type="text" id="orgName" required placeholder="Full registered name">
+            </div>
+            <div class="field-row">
+              <div class="form-group">
+                <label for="orgCity">City:</label>
+                <input type="text" id="orgCity" placeholder="e.g., New Delhi">
+              </div>
+              <div class="form-group">
+                <label for="orgEmail">Contact Email:</label>
+                <input type="email" id="orgEmail" placeholder="coordinator@example.org">
+              </div>
+            </div>
+            <button type="submit" class="btn-submit">Register Organization</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header-row">
+            <h3>Participating Organizations</h3>
+            <label class="inline-check">
+              <input type="checkbox" id="orgActiveOnly" checked>
+              Active only
+            </label>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>City</th>
+                <th>Contact</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="orgTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- About Us -->
+      <section id="about" class="page-section">
+        <h1>About Us</h1>
+
+        <div class="card">
+          <h3>AIIA Clinical Trial Management System</h3>
+          <p>
+            A Good Clinical Practice (GCP) compliant platform for conducting and monitoring
+            Ayurvedic clinical trials &mdash; from participant onboarding and double-blind
+            randomization through electronic case report forms, pharmacovigilance and
+            regulatory export.
+          </p>
+          <p class="mb-0">
+            The system captures Ayurveda-specific clinical data alongside conventional trial
+            data: baseline <em>Prakriti</em> assessment, observed <em>Dosha</em> imbalance and
+            <em>Anupana</em> details are recorded as first-class fields on every visit record.
+          </p>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <h3>Regulatory Scope</h3>
+            <ul class="feature-list">
+              <li><strong>21 CFR Part 11</strong> &mdash; electronic signatures with signer re-authentication, SHA-256 record hashing, and tamper detection on verification.</li>
+              <li><strong>Record immutability</strong> &mdash; once an eCRF is signed it is permanently locked against modification.</li>
+              <li><strong>Audit trail</strong> &mdash; every action is appended to an immutable log, retained even when the originating transaction is rolled back.</li>
+              <li><strong>Double-blind integrity</strong> &mdash; treatment allocation is masked in the query layer, so blinded roles never receive the real arm.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Institution Details</h3>
+            <p class="placeholder-note">
+              The entries below are placeholders. Replace them with your institution's
+              registered details before this system is used in a live study.
+            </p>
+            <dl class="detail-list">
+              <dt>Institution</dt>
+              <dd data-placeholder>Not configured</dd>
+              <dt>Ethics Committee registration</dt>
+              <dd data-placeholder>Not configured</dd>
+              <dt>CTRI registration</dt>
+              <dd data-placeholder>Not configured</dd>
+              <dt>Principal contact</dt>
+              <dd data-placeholder>Not configured</dd>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <!-- Feedback & Support -->
+      <section id="feedback" class="page-section">
+        <h1>Feedback &amp; Support</h1>
+        <div class="grid">
+          <div class="card">
+            <h3>Raise a Support Request</h3>
+            <form id="feedbackForm">
+              <div class="form-group">
+                <label for="feedbackCategory">Category:</label>
+                <select id="feedbackCategory" required>
+                  <option value="BUG">Bug / Defect</option>
+                  <option value="DATA_ISSUE">Data Issue</option>
+                  <option value="FEATURE_REQUEST">Feature Request</option>
+                  <option value="TRAINING">Training Request</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="feedbackSubject">Subject:</label>
+                <input type="text" id="feedbackSubject" required maxlength="255" placeholder="Short summary">
+              </div>
+              <div class="form-group">
+                <label for="feedbackMessage">Details:</label>
+                <textarea id="feedbackMessage" rows="6" required maxlength="5000"
+                          placeholder="What happened, what you expected, and the record or screen involved."></textarea>
+              </div>
+              <button type="submit" class="btn-submit">Submit Request</button>
+              <p class="form-note">Submitted requests are logged to the audit trail against your account.</p>
+            </form>
+          </div>
+
+          <div class="card">
+            <h3>Support Channels</h3>
+            <p class="placeholder-note">
+              Replace these placeholders with your study's real support contacts.
+            </p>
+            <dl class="detail-list">
+              <dt>Technical support</dt>
+              <dd data-placeholder>Not configured</dd>
+              <dt>Data management query desk</dt>
+              <dd data-placeholder>Not configured</dd>
+              <dt>Pharmacovigilance / SAE reporting</dt>
+              <dd data-placeholder>Not configured</dd>
+            </dl>
+            <p class="urgent-note">
+              For a serious adverse event, use the <strong>Safety Alerts (AE)</strong> module and
+              your study's SAE escalation procedure. Do not report an SAE through this form.
+            </p>
+          </div>
+        </div>
+      </section>
+
     </main>
   </div>
 
@@ -324,10 +552,13 @@
   <script src="js/ui.js"></script>
   <script src="js/session.js"></script>
   <script src="js/dashboard.js"></script>
+  <script src="js/trials.js"></script>
   <script src="js/patients.js"></script>
   <script src="js/ecrf.js"></script>
   <script src="js/safety.js"></script>
   <script src="js/audit.js"></script>
+  <script src="js/organizations.js"></script>
+  <script src="js/feedback.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

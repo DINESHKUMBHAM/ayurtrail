@@ -3,45 +3,87 @@
    public/app.js rendered -- Bootstrap was never actually loaded by the page.
    ========================================================================== */
 
-.text-muted { color: var(--text-muted); }
-.text-light { color: var(--text-light); }
-.text-danger { color: var(--danger); }
+.text-muted  { color: var(--text-muted); }
+.text-light  { color: var(--text-light); }
+.text-danger { color: var(--danger-text); }
 .text-center { text-align: center; }
-.text-small { font-size: 0.8rem; }
-.text-tiny { font-size: 0.75rem; }
+.text-small  { font-size: 0.8rem; }
+.text-tiny   { font-size: 0.73rem; }
 
+/* Full-width message row inside a table body (loading / empty / error). */
 .cell-message {
   text-align: center;
   color: var(--text-muted);
   font-size: 0.85rem;
-  padding: 18px 14px;
+  padding: 26px 16px;
 }
 
-.cell-message.is-error { color: var(--danger); }
+.cell-message.is-error {
+  color: var(--danger-text);
+}
+
+/* Table rows carrying a message should not react to hover. */
+tbody tr:hover td.cell-message {
+  background-color: transparent;
+}
 
 .payload-cell {
   margin: 0;
-  font-size: 0.75rem;
-  max-width: 300px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  max-width: 320px;
+  max-height: 64px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: pre-wrap;
+  color: var(--text-muted);
 }
 
-.hidden { display: none !important; }
+.hidden {
+  display: none !important;
+}
 
-/* Indeterminate spinner used while a hash verification is in flight */
+/* Indeterminate spinner used while a hash verification is in flight. */
 .spinner {
   display: inline-block;
-  width: 12px;
-  height: 12px;
-  border: 2px solid var(--border-ash);
-  border-top-color: var(--primary-blue);
-  border-radius: 50%;
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--brand-600);
+  border-radius: var(--radius-full);
   animation: spin 0.7s linear infinite;
   vertical-align: middle;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Thin, unobtrusive scrollbars in the two scrolling panes. */
+.content,
+.sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--neutral-300) transparent;
+}
+
+.content::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.content::-webkit-scrollbar-thumb,
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: var(--neutral-300);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: var(--radius-full);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.35);
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background-color: var(--neutral-400);
 }

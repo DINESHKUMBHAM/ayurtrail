@@ -10,12 +10,16 @@ const SECTION_LOADERS = {
     requestAnimationFrame(() => setTimeout(loadDashboard, 60));
   },
   patients: () => {
+    applyTrialFormVisibility();
     loadPatientModule();
     loadRandomizationModule();
   },
   ecrf: () => loadEcrfTable(),
   pharmacovigilance: () => loadAEModule(),
-  audit: () => fetchAuditLogs()
+  audit: () => fetchAuditLogs(),
+  organizations: () => loadOrganizations(),
+  // 'about' is static markup and needs no loader.
+  feedback: () => {}
 };
 
 function navigate(sectionId) {

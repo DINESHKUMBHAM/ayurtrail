@@ -35,8 +35,10 @@ router.post('/', authenticateToken, requireRole('PI', 'CRC', 'ADMIN'), async (re
 
     const patientCode = `PAT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
+    // enrolled_at is set explicitly (the column carries no DEFAULT -- see
+    // src/db/migrations.js) and drives the recruitment velocity metric.
     const [result] = await connection.execute(
-      `INSERT INTO patients (patient_code, trial_id, prakriti_baseline, status) VALUES (?, ?, ?, 'ENROLLED')`,
+      `INSERT INTO patients (patient_code, trial_id, prakriti_baseline, status, enrolled_at) VALUES (?, ?, ?, 'ENROLLED', NOW())`,
       [patientCode, validTrialId, prakriti_baseline]
     );
 

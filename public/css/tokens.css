@@ -1,32 +1,129 @@
 /* ==========================================================================
-   AIIA CTMS - Design tokens (Navy, Obsidian & Slate Ash)
-   The single source of truth for colour, elevation and radius.
+   AIIA CTMS - Design tokens
+   The single source of truth for colour, elevation, radius and motion.
+   Legacy token names (--primary-navy, --bg-ash, --shadow-sm ...) are kept and
+   remapped onto the new scales so existing rules keep working.
    ========================================================================== */
 :root {
-  --primary-navy: #1e3a8a;
-  --primary-blue: #2563eb;
-  --primary-hover: #1d4ed8;
+  /* --- Brand: clinical blue ------------------------------------------- */
+  --brand-50:  #eff6ff;
+  --brand-100: #dbeafe;
+  --brand-200: #bfdbfe;
+  --brand-300: #93c5fd;
+  --brand-400: #60a5fa;
+  --brand-500: #3b82f6;
+  --brand-600: #2563eb;
+  --brand-700: #1d4ed8;
+  --brand-800: #1e40af;
+  --brand-900: #1e3a8a;
+  --brand-950: #172554;
 
-  --obsidian-dark: #020617;
-  --obsidian-sidebar: #0f172a;
+  /* --- Accent: botanical teal (Ayurveda cue, used sparingly) ---------- */
+  --accent-400: #2dd4bf;
+  --accent-500: #14b8a6;
+  --accent-600: #0d9488;
+  --accent-700: #0f766e;
 
-  --bg-ash: #f1f5f9;
-  --card-white: #ffffff;
-  --surface-ash: #e2e8f0;
-  --border-ash: #cbd5e1;
+  /* --- Neutrals -------------------------------------------------------- */
+  --neutral-0:   #ffffff;
+  --neutral-50:  #f8fafc;
+  --neutral-100: #f1f5f9;
+  --neutral-200: #e2e8f0;
+  --neutral-300: #cbd5e1;
+  --neutral-400: #94a3b8;
+  --neutral-500: #64748b;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1e293b;
+  --neutral-900: #0f172a;
+  --neutral-950: #020617;
 
-  --text-main: #0f172a;
-  --text-muted: #475569;
-  --text-light: #94a3b8;
+  /* --- Semantic: solid, tint and on-tint text for soft badges --------- */
+  --success:      #16a34a;
+  --success-tint: #dcfce7;
+  --success-text: #15803d;
 
-  --danger: #dc2626;
+  --warning:      #d97706;
+  --warning-tint: #fef3c7;
+  --warning-text: #b45309;
+
+  --danger:       #dc2626;
+  --danger-tint:  #fee2e2;
+  --danger-text:  #b91c1c;
   --danger-hover: #b91c1c;
-  --warning: #d97706;
-  --success: #16a34a;
-  --info: #0284c7;
 
-  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
-  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.12);
-  --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.18);
-  --radius: 8px;
+  --info:         #0284c7;
+  --info-tint:    #e0f2fe;
+  --info-text:    #0369a1;
+
+  /* --- Surfaces -------------------------------------------------------- */
+  --bg-app:      #f5f7fb;
+  --bg-elevated: var(--neutral-0);
+  --bg-subtle:   var(--neutral-50);
+  --bg-sunken:   var(--neutral-100);
+
+  --border:        var(--neutral-200);
+  --border-strong: var(--neutral-300);
+
+  /* --- Text ------------------------------------------------------------ */
+  --text-main:    var(--neutral-900);
+  --text-muted:   var(--neutral-600);
+  --text-light:   var(--neutral-400);
+  --text-inverse: var(--neutral-0);
+
+  /* --- Sidebar --------------------------------------------------------- */
+  --sidebar-bg:       #101a2e;
+  --sidebar-bg-end:   #0a1120;
+  --sidebar-text:     #cbd5e1;
+  --sidebar-text-dim: #7c8ba5;
+  --sidebar-border:   rgba(148, 163, 184, 0.14);
+  --sidebar-hover:    rgba(148, 163, 184, 0.10);
+
+  /* --- Elevation: ambient + direct light ------------------------------ */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.07);
+  --shadow-md: 0 2px 4px rgba(15, 23, 42, 0.05), 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 4px 8px rgba(15, 23, 42, 0.05), 0 12px 28px rgba(15, 23, 42, 0.11);
+  --shadow-xl: 0 8px 16px rgba(15, 23, 42, 0.07), 0 24px 48px rgba(15, 23, 42, 0.15);
+  --shadow-brand: 0 4px 14px rgba(37, 99, 235, 0.28);
+
+  --ring: 0 0 0 3px rgba(59, 130, 246, 0.35);
+
+  /* --- Radius ---------------------------------------------------------- */
+  --radius-sm:   6px;
+  --radius:      10px;
+  --radius-lg:   14px;
+  --radius-full: 999px;
+
+  /* --- Motion ---------------------------------------------------------- */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 140ms;
+  --dur: 220ms;
+
+  /* --- Typography ------------------------------------------------------ */
+  --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+
+  /* --- Legacy aliases (referenced throughout the existing stylesheets) - */
+  --primary-navy: var(--brand-900);
+  --primary-blue: var(--brand-600);
+  --primary-hover: var(--brand-700);
+  --obsidian-dark: var(--neutral-950);
+  --obsidian-sidebar: var(--sidebar-bg);
+  --bg-ash: var(--bg-app);
+  --card-white: var(--bg-elevated);
+  --surface-ash: var(--neutral-200);
+  --border-ash: var(--border);
+}
+
+/* Respect a reduced-motion preference everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

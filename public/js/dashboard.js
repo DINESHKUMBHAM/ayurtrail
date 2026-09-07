@@ -25,14 +25,11 @@ const AE_BUCKETS = [
   { label: 'Severe SAE', severities: ['SEVERE', 'SAE', 'CRITICAL'] }
 ];
 
-const KPI_FIELDS = {
-  kpiActiveTrials: 'active_trials',
-  kpiTotalPatients: 'total_patients',
-  kpiPendingSignatures: 'pending_signatures',
-  kpiActiveSAE: 'active_sae'
-};
-
 async function loadDashboard() {
+  // The eight analytics tiles and the charts come from different endpoints;
+  // a failure in one must not blank the other.
+  renderMetricTiles();
+
   let data;
   try {
     const res = await apiFetch('/api/dashboard/stats');
@@ -46,29 +43,57 @@ async function loadDashboard() {
     return;
   }
 
-  renderKpiTiles(data.summary || {});
   renderTrialProgress(data.trials || []);
   renderPrakritiChart(data.prakriti_distribution || []);
   renderAEChart(await fetchAeDistribution());
 }
 
 function showDashboardError(message) {
-  Object.keys(KPI_FIELDS).forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.innerText = '--';
-  });
-
   const container = document.getElementById('trialProgressContainer');
   if (container) {
     container.innerHTML = `<p class="text-danger">${message}</p>`;
   }
 }
 
-function renderKpiTiles(summary) {
-  Object.entries(KPI_FIELDS).forEach(([elementId, field]) => {
-    const el = document.getElementById(elementId);
-    if (el) el.innerText = summary[field] || 0;
-  });
+// --- Trial analytics tiles ---------------------------------------------
+
+async function renderMetricTiles() {
+  const grid = document.getElementById('metricGrid');
+  if (!grid) return;
+
+  grid.innerHTML = '<p class="text-muted">Loading trial metrics...</p>';
+
+  let metrics;
+  try {
+    const res = await apiFetch('/api/dashboard/metrics');
+    if (!res.ok) {
+      grid.innerHTML = `<p class="text-danger">${await readError(res, 'Failed to load trial metrics.')}</p>`;
+      return;
+    }
+    ({ metrics } = await res.json());
+  } catch (err) {
+    grid.innerHTML = `<p class="text-danger">Cannot reach the server: ${err.message}</p>`;
+    return;
+  }
+
+  grid.innerHTML = Object.values(metrics).map(renderMetricCard).join('');
+}
+
+// A metric with status 'unavailable' renders as a muted card explaining why,
+// never as a zero or a placeholder figure.
+function renderMetricCard(metric) {
+  const isUnavailable = metric.status === 'unavailable';
+  return `
+    <div class="metric-card metric-${metric.status}"${isUnavailable ? ' title="' + escapeAttr(metric.detail) + '"' : ''}>
+      <small class="metric-label">${metric.label}</small>
+      <div class="metric-value">${metric.display}</div>
+      <small class="metric-detail">${metric.detail || ''}</small>
+    </div>
+  `;
+}
+
+function escapeAttr(text) {
+  return String(text || '').replace(/"/g, '&quot;');
 }
 
 // NOTE: the trials table has no target_enrollment / enrolled_count columns, so
