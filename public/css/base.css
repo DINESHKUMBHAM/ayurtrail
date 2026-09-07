@@ -23,7 +23,24 @@ body {
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'cv02', 'cv03', 'cv04', 'tnum';
+  font-optical-sizing: auto;
+  /* Inter alternates that disambiguate look-alike glyphs: l gains a tail and
+     uppercase I gains serifs, so "Il1" stays readable in codes and IDs. */
+  font-feature-settings: 'cv05' 1, 'cv08' 1;
+}
+
+/* Proportional figures read better in prose; tabular figures are reserved for
+   places where numbers stack and must align. */
+td,
+th,
+code,
+input,
+select,
+textarea,
+.metric-value,
+.payload-cell,
+.progress-row-label {
+  font-variant-numeric: tabular-nums;
 }
 
 /* --- Headings --------------------------------------------------------- */
