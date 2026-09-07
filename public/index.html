@@ -92,24 +92,9 @@
       <section id="dashboard" class="page-section">
         <h1>Executive Clinical Trial Analytics</h1>
 
-        <div class="grid grid-kpi">
-          <div class="stat-card">
-            <small>Active Clinical Trials</small>
-            <h2 id="kpiActiveTrials" class="stat-navy">--</h2>
-          </div>
-          <div class="stat-card">
-            <small>Enrolled Subjects</small>
-            <h2 id="kpiTotalPatients" class="stat-blue">--</h2>
-          </div>
-          <div class="stat-card">
-            <small>Pending 21 CFR Signatures</small>
-            <h2 id="kpiPendingSignatures" class="stat-warn">--</h2>
-          </div>
-          <div class="stat-card">
-            <small>Open SAE Alerts</small>
-            <h2 id="kpiActiveSAE" class="stat-danger">--</h2>
-          </div>
-        </div>
+        <!-- Eight trial analytics tiles, rendered from /api/dashboard/metrics.
+             Order and content come from the API response. -->
+        <div class="metric-grid" id="metricGrid"></div>
 
         <div class="card">
           <h3>Active Trial Cohorts &amp; Recruitment Targets</h3>
@@ -143,6 +128,54 @@
       <section id="patients" class="page-section">
         <h1>Participant Onboarding &amp; Blinding</h1>
         <div class="grid">
+          <!-- Trial registration. Hidden for roles that cannot create
+               protocols; the API enforces the same rule (PI/ADMIN). -->
+          <div class="card grid-span-2" id="trialFormCard">
+            <h3>Register New Clinical Trial</h3>
+            <form id="trialForm">
+              <div class="field-row">
+                <div class="form-group">
+                  <label for="trialCode">Trial Code:</label>
+                  <input type="text" id="trialCode" required placeholder="e.g., AYU-T104">
+                </div>
+                <div class="form-group">
+                  <label for="trialPhase">Phase:</label>
+                  <select id="trialPhase" required>
+                    <option value="I">Phase I</option>
+                    <option value="II" selected>Phase II</option>
+                    <option value="III">Phase III</option>
+                    <option value="IV">Phase IV</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="trialStatus">Status:</label>
+                  <select id="trialStatus" required>
+                    <option value="ACTIVE" selected>Active</option>
+                    <option value="OPEN">Open</option>
+                    <option value="CLOSED">Closed</option>
+                    <option value="COMPLETED">Completed</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="trialTitle">Title:</label>
+                <input type="text" id="trialTitle" required placeholder="e.g., Ashwagandha Stress Reduction Trial">
+              </div>
+              <div class="field-row">
+                <div class="form-group">
+                  <label for="trialTarget">Target Enrollment:</label>
+                  <input type="number" id="trialTarget" min="1" placeholder="e.g., 100">
+                </div>
+                <div class="form-group">
+                  <label for="trialStartDate">Start Date:</label>
+                  <input type="date" id="trialStartDate">
+                </div>
+              </div>
+              <button type="submit" class="btn-submit">Register Clinical Trial</button>
+              <p class="form-note">Target enrollment drives the estimated completion metric on the dashboard.</p>
+            </form>
+          </div>
+
           <div class="card">
             <h3>Register New Participant</h3>
             <form id="patientForm">
@@ -324,6 +357,7 @@
   <script src="js/ui.js"></script>
   <script src="js/session.js"></script>
   <script src="js/dashboard.js"></script>
+  <script src="js/trials.js"></script>
   <script src="js/patients.js"></script>
   <script src="js/ecrf.js"></script>
   <script src="js/safety.js"></script>

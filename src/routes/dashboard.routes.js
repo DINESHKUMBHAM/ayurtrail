@@ -2,8 +2,21 @@ const express = require('express');
 
 const db = require('../db/pool');
 const { authenticateToken } = require('../middleware/auth');
+const { getTrialMetrics } = require('../services/trialMetrics');
 
 const router = express.Router();
+
+// GET /api/dashboard/metrics -- the eight trial analytics tiles.
+// Each metric carries its own status and detail; metrics whose source data is
+// missing come back as status 'unavailable' rather than a fabricated value.
+router.get('/metrics', authenticateToken, async (req, res) => {
+  try {
+    res.json({ metrics: await getTrialMetrics() });
+  } catch (err) {
+    console.error('Trial Metrics Error:', err);
+    res.status(500).json({ error: 'Failed to retrieve trial metrics.' });
+  }
+});
 
 // GET /api/dashboard/stats -- all six aggregates run concurrently.
 router.get('/stats', authenticateToken, async (req, res) => {

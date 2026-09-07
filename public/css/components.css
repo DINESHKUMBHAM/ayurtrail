@@ -66,6 +66,100 @@
 .stat-warn  { color: var(--warning); }
 .stat-danger { color: var(--danger); }
 
+/* Trial analytics tiles.
+   Status drives the accent bar and value colour: good / warn / danger /
+   neutral, plus 'unavailable' for a metric whose source data is missing. */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metric-card {
+  background: var(--card-white);
+  border: 1px solid var(--border-ash);
+  border-top: 3px solid var(--text-light);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 118px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.metric-label {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.metric-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--text-main);
+}
+
+.metric-detail {
+  color: var(--text-light);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  margin-top: auto;
+}
+
+.metric-good    { border-top-color: var(--success); }
+.metric-warn    { border-top-color: var(--warning); }
+.metric-danger  { border-top-color: var(--danger); }
+.metric-neutral { border-top-color: var(--primary-blue); }
+
+.metric-good .metric-value    { color: var(--success); }
+.metric-warn .metric-value    { color: var(--warning); }
+.metric-danger .metric-value  { color: var(--danger); }
+.metric-neutral .metric-value { color: var(--primary-navy); }
+
+/* A metric whose source data does not exist yet. Deliberately muted so it
+   reads as "no data", never as a real measurement. */
+.metric-unavailable {
+  border-top-color: var(--border-ash);
+  background: #fbfcfd;
+}
+
+.metric-unavailable .metric-value {
+  color: var(--text-light);
+  font-weight: 700;
+}
+
+@media (max-width: 1100px) {
+  .metric-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Multi-column form rows (trial registration) */
+.field-row {
+  display: flex;
+  gap: 16px;
+}
+
+.field-row .form-group {
+  flex: 1;
+}
+
+.form-note {
+  color: var(--text-light);
+  font-size: 0.75rem;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
 /* Progress bars */
 .progress-list {
   display: flex;

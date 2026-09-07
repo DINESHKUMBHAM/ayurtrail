@@ -4,6 +4,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   bindSession();
+  bindTrialForm();
   bindPatientForm();
   bindEcrfForm();
   bindAeForm();

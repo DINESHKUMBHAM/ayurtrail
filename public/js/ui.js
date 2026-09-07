@@ -10,6 +10,7 @@ const SECTION_LOADERS = {
     requestAnimationFrame(() => setTimeout(loadDashboard, 60));
   },
   patients: () => {
+    applyTrialFormVisibility();
     loadPatientModule();
     loadRandomizationModule();
   },
