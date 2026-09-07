@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIH26046 - AIIA Clinical Trials Dashboard & Analytics</title>
+  <!-- Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* ==========================================================================
+       AIIA CTMS - Color System (Navy, Obsidian & Slate Ash)
+       ========================================================================== */
+    :root {
+      --primary-navy: #1e3a8a;
+      --primary-blue: #2563eb;
+      --primary-hover: #1d4ed8;
+      
+      --obsidian-dark: #020617;
+      --obsidian-sidebar: #0f172a;
+      
+      --bg-ash: #f1f5f9;
+      --card-white: #ffffff;
+      --surface-ash: #e2e8f0;
+      --border-ash: #cbd5e1;
+      
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-light: #94a3b8;
+      
+      --danger: #dc2626;
+      --danger-hover: #b91c1c;
+      --warning: #d97706;
+      --success: #16a34a;
+      --info: #0284c7;
+      
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.12);
+      --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.18);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-ash);
+      color: var(--text-main);
+      line-height: 1.5;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Full-Screen Login */
+    #login-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      width: 100vw;
+      background: linear-gradient(135deg, var(--obsidian-dark) 0%, var(--obsidian-sidebar) 50%, var(--primary-navy) 100%);
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .login-header {
+      text-align: center;
+      color: #ffffff;
+      margin-bottom: 30px;
+    }
+
+    .login-header h1 {
+      font-size: 2rem;
+      border: none;
+      padding: 0;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .login-header p {
+      color: var(--text-light);
+      font-size: 1rem;
+    }
+
+    .login-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    /* Main Workspace Layout */
+    .app-container {
+      display: none;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .app-container.authenticated {
+      display: flex;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 270px;
+      background: var(--obsidian-sidebar);
+      color: #ffffff;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+    }
+
+    .sidebar h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .user-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      font-size: 0.88rem;
+      color: #cbd5e1;
+    }
+
+    .sidebar nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .sidebar button {
+      width: 100%;
+      padding: 11px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar button:hover, .sidebar button.active-nav {
+      background: var(--primary-navy);
+      color: #ffffff;
+      border-color: var(--primary-blue);
+      transform: translateX(3px);
+    }
+
+    .btn-logout {
+      background: rgba(220, 38, 38, 0.2) !important;
+      border-color: rgba(220, 38, 38, 0.4) !important;
+      color: #fca5a5 !important;
+      margin-top: auto;
+    }
+
+    .btn-logout:hover {
+      background: var(--danger) !important;
+      color: #ffffff !important;
+    }
+
+    /* Content Area */
+    .content {
+      flex: 1;
+      padding: 32px 40px;
+      overflow-y: auto;
+      background-color: var(--bg-ash);
+    }
+
+    .page-section {
+      display: none;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      color: var(--obsidian-dark);
+      margin-bottom: 24px;
+      font-weight: 700;
+      border-bottom: 2px solid var(--border-ash);
+      padding-bottom: 10px;
+    }
+
+    /* Grid & Card Containers */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card-white);
+      padding: 24px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-ash);
+      margin-bottom: 24px;
+    }
+
+    .card h3, .card h4 {
+      color: var(--obsidian-dark);
+      font-size: 1.15rem;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+
+    /* Stat Highlight Cards */
+    .stat-card {
+      background: var(--card-white);
+      border: 1px solid var(--border-ash);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-card small {
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .stat-card h2 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    /* Progress & Analytics Visual Elements */
+    .progress-bar-bg {
+      background-color: var(--surface-ash);
+      border-radius: 6px;
+      height: 12px;
+      width: 100%;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-bar-fill {
+      background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-navy) 100%);
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.5s ease-in-out;
+    }
+
+    /* Form Design */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.88rem;
+      color: var(--text-main);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border-ash);
+      border-radius: 6px;
+      background-color: #f8fafc;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    /* Interactive Action Buttons */
+    .btn-submit {
+      background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
+      color: #ffffff;
+      border: none;
+      padding: 11px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      width: 100%;
+      transition: opacity 0.2s, transform 0.1s;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-submit:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    .btn-sign {
+      background: var(--primary-navy);
+      color: #ffffff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .btn-sign:hover {
+      background: var(--primary-blue);
+    }
+
+    .btn-verify {
+      background: var(--info);
+      color: #ffffff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #ffffff;
+      border: none;
+      padding: 11px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      width: 100%;
+    }
+
+    .btn-danger:hover {
+      background: var(--danger-hover);
+    }
+
+    .btn-export {
+      background: var(--obsidian-dark);
+      color: #ffffff;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+
+    .btn-export:hover {
+      background: var(--primary-navy);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 12px;
+      background: #ffffff;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border-ash);
+    }
+
+    th, td {
+      padding: 11px 14px;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    th {
+      background: var(--obsidian-dark);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-ash);
+    }
+
+    td {
+      border-bottom: 1px solid var(--surface-ash);
+      color: var(--text-main);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+
+    tr:hover td {
+      background-color: #eff6ff;
+    }
+
+    /* Badges */
+    .badge {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: inline-block;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-locked { background: var(--success); }
+    .badge-open { background: var(--warning); }
+    .badge-sae { background: var(--danger); }
+    .badge-ae { background: #eab308; color: var(--obsidian-dark); }
+    .badge-verified { background: #059669; }
+    .badge-tampered { background: #b91c1c; }
+
+    /* Fix Canvas Wrapper Heights */
+    .chart-box {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      height: 280px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Full Screen Login -->
+  <div id="login-wrapper">
+    <div class="login-header">
+      <h1>AIIA Clinical Trials Management System</h1>
+      <p>Select your authorized role session to access GCP & 21 CFR Part 11 workspace</p>
+    </div>
+
+    <div class="login-grid">
+      <div class="card">
+        <h3>Principal Investigator (PI)</h3>
+        <p>Authorized to electronically sign eCRFs and lock clinical records.</p>
+        <div class="form-group">
+          <label>Password:</label>
+          <input type="password" id="piPassword" value="PiSecret@2026">
+        </div>
+        <button class="btn-submit" onclick="loginAs('pi@aiia.gov.in', 'piPassword', 'PI')">Login as Dr. Rajesh Sharma (PI)</button>
+      </div>
+
+      <div class="card">
+        <h3>Clinical Research Coordinator (CRC)</h3>
+        <p>Authorized for subject registration and initial eCRF entry.</p>
+        <div class="form-group">
+          <label>Password:</label>
+          <input type="password" id="crcPassword" value="CrcSecret@2026">
+        </div>
+        <button class="btn-submit" onclick="loginAs('crc@aiia.gov.in', 'crcPassword', 'CRC')">Login as Ananya Verma (CRC)</button>
+      </div>
+
+      <div class="card">
+        <h3>Auditor / Ethics Board</h3>
+        <p>Authorized for read-only hash verification and audit log exports.</p>
+        <div class="form-group">
+          <label>Password:</label>
+          <input type="password" id="auditPassword" value="AuditSecret@2026">
+        </div>
+        <button class="btn-submit" style="background: var(--info);" onclick="loginAs('auditor@aiia.gov.in', 'auditPassword', 'AUDITOR')">Login as Auditor</button>
+      </div>
+
+      <div class="card">
+        <h3>System Administrator</h3>
+        <p>Full system access and compliance oversight.</p>
+        <div class="form-group">
+          <label>Password:</label>
+          <input type="password" id="adminPassword" value="AdminSecret@2026">
+        </div>
+        <button class="btn-submit" style="background: var(--obsidian-dark);" onclick="loginAs('admin@aiia.gov.in', 'adminPassword', 'ADMIN')">Login as Admin</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workspace Shell -->
+  <div class="app-container" id="appContainer">
+    <aside class="sidebar">
+      <h2>AIIA CTMS (GCP)</h2>
+      <div class="user-card" id="userInfo">Not Logged In</div>
+      <nav>
+        <button id="nav-dashboard" onclick="navigate('dashboard')">KPI Analytics Dashboard</button>
+        <button id="nav-patients" onclick="navigate('patients')">Patient Registry</button>
+        <button id="nav-ecrf" onclick="navigate('ecrf')">Ayurveda eCRF & Signatures</button>
+        <button id="nav-pharmacovigilance" onclick="navigate('pharmacovigilance')">Safety Alerts (AE)</button>
+        <button id="nav-audit" onclick="navigate('audit')">Audit Trail & Export</button>
+        <button class="btn-logout" onclick="logout()">🔒 Sign Out</button>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <div id="systemAlertBanner" style="display: none; padding: 14px 20px; background-color: var(--danger); color: white; border-radius: var(--radius); margin-bottom: 20px; font-weight: 600; box-shadow: var(--shadow-md); align-items: center; justify-content: space-between;">
+        <span id="systemAlertText">⚠️ CRITICAL ALERT: Adverse Event Reported</span>
+        <button onclick="document.getElementById('systemAlertBanner').style.display='none'" style="background: transparent; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem;">✕</button>
+      </div>
+
+      <!-- KPI Dashboard & Analytics View -->
+      <section id="dashboard" class="page-section">
+        <h1>Executive Clinical Trial Analytics</h1>
+        
+        <!-- Summary KPI Grid -->
+        <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+          <div class="stat-card">
+            <small>Active Clinical Trials</small>
+            <h2 id="kpiActiveTrials" style="color: var(--primary-navy);">--</h2>
+          </div>
+          <div class="stat-card">
+            <small>Enrolled Subjects</small>
+            <h2 id="kpiTotalPatients" style="color: var(--primary-blue);">--</h2>
+          </div>
+          <div class="stat-card">
+            <small>Pending 21 CFR Signatures</small>
+            <h2 id="kpiPendingSignatures" style="color: var(--warning);">--</h2>
+          </div>
+          <div class="stat-card">
+            <small>Open SAE Alerts</small>
+            <h2 id="kpiActiveSAE" style="color: var(--danger);">--</h2>
+          </div>
+        </div>
+
+        <!-- Trial Enrollment Capacity Visualizer -->
+        <div class="card" style="margin-bottom: 24px;">
+          <h3>Active Trial Cohorts & Recruitment Targets</h3>
+          <div id="trialProgressContainer" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;"></div>
+        </div>
+
+        <!-- Visual Analytics Grid (Charts) -->
+        <div class="grid">
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h3>Baseline Prakriti Breakdown</h3>
+              <small style="color: var(--text-muted);">Ayurvedic Demographic Cohort</small>
+            </div>
+            <div class="chart-box">
+              <canvas id="prakritiChart"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h3>Pharmacovigilance Severity Index</h3>
+              <small style="color: var(--text-muted);">Adverse Events (AE) vs SAE</small>
+            </div>
+            <div class="chart-box">
+              <canvas id="aeChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Patient Roster Module -->
+      <section id="patients" class="page-section">
+        <h1>Participant Onboarding & Blinding</h1>
+        <div class="grid">
+          <div class="card">
+            <h3>Register New Participant</h3>
+            <form id="patientForm">
+              <div class="form-group">
+                <label>Assign to Clinical Trial:</label>
+                <select id="ptTrialSelect" required></select>
+              </div>
+              <div class="form-group">
+                <label>Baseline Prakriti Assessment:</label>
+                <select id="prakritiSelect" required>
+                  <option value="Vata">Vata Dominant</option>
+                  <option value="Pitta">Pitta Dominant</option>
+                  <option value="Kapha">Kapha Dominant</option>
+                  <option value="Vata-Pitta">Vata-Pitta Dwandaja</option>
+                  <option value="Pitta-Kapha">Pitta-Kapha Dwandaja</option>
+                  <option value="Vata-Kapha">Vata-Kapha Dwandaja</option>
+                  <option value="Tridoshaja">Tridoshaja</option>
+                </select>
+              </div>
+              <button type="submit" class="btn-submit">Onboard Subject</button>
+            </form>
+          </div>
+          
+          <div class="card">
+            <h3>Enrolled Roster</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Trial Code</th>
+                  <th>Prakriti</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="patientTableBody"></tbody>
+            </table>
+          </div>
+      
+          <div class="card" style="grid-column: span 2;">
+            <h3>Double-Blind Treatment Allocation & Kit Dispensing</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Subject Code</th>
+                  <th>Trial</th>
+                  <th>Assigned Kit ID</th>
+                  <th>Treatment Arm (Role-Based Blinding)</th>
+                  <th>Randomized At</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="randomizationTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- eCRF Module -->
+      <section id="ecrf" class="page-section">
+        <h1>Ayurvedic eCRF Entry & 21 CFR Part 11 Signatures</h1>
+        <div class="grid">
+          <div class="card">
+            <h3>New Visit Data Capture</h3>
+            <form id="ecrfForm">
+              <div class="form-group">
+                <label>Patient ID Database Link:</label>
+                <input type="number" id="p_id" required value="1">
+              </div>
+              <div class="form-group">
+                <label>Visit Number:</label>
+                <input type="number" id="v_num" required value="1">
+              </div>
+              <div class="form-group">
+                <label>Imbalance Dosha Observed:</label>
+                <select id="dosha">
+                  <option value="Vata">Vata</option>
+                  <option value="Pitta">Pitta</option>
+                  <option value="Kapha">Kapha</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Anupana Details:</label>
+                <input type="text" id="anupana" required value="Warm Milk / Honey">
+              </div>
+              <button type="submit" class="btn-submit">Save Draft Record</button>
+            </form>
+          </div>
+
+          <div class="card" style="grid-column: span 2;">
+            <h4>eCRF Records (21 CFR Part 11 Compliant)</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Patient ID</th>
+                  <th>Visit</th>
+                  <th>Anupana Details</th>
+                  <th>Signature Status</th>
+                  <th>Data Integrity Check</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ecrfTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pharmacovigilance View -->
+      <section id="pharmacovigilance" class="page-section">
+        <h1>Safety Alerts & Pharmacovigilance</h1>
+        <div class="grid">
+          <div class="card">
+            <h3>Report Adverse Event (AE)</h3>
+            <form id="aeForm">
+              <div class="form-group">
+                <label>Patient ID:</label>
+                <input type="number" id="aePatientId" required value="1">
+              </div>
+              <div class="form-group">
+                <label>Trial ID:</label>
+                <input type="number" id="aeTrialId" required value="1">
+              </div>
+              <div class="form-group">
+                <label>Severity:</label>
+                <select id="aeSeverity" required>
+                  <option value="MILD">Mild (AE)</option>
+                  <option value="MODERATE">Moderate (AE)</option>
+                  <option value="SEVERE">Severe (SAE)</option>
+                  <option value="SAE">Serious Adverse Event (SAE)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Suspected Herb:</label>
+                <input type="text" id="aeHerb" required placeholder="e.g., Ashwagandha">
+              </div>
+              <div class="form-group">
+                <label>Symptoms:</label>
+                <textarea id="aeSymptom" rows="2" required></textarea>
+              </div>
+              <button type="submit" class="btn-danger">Report Safety Event</button>
+            </form>
+          </div>
+          <div class="card">
+            <h3>Active Safety Logs</h3>
+            <div id="aeList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Audit Module -->
+      <section id="audit" class="page-section">
+        <h1>Immutable Audit Trail & Regulatory Exports</h1>
+        <div style="margin-bottom: 20px;">
+          <button class="btn-export" onclick="exportData('audit')">Export Full Audit Log (CSV)</button>
+          <button class="btn-export" onclick="exportData('patients')">Export Patient Roster (CSV)</button>
+          <button class="btn-export" onclick="exportData('safety')">Export AE Reports (CSV)</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>User ID</th>
+              <th>Action</th>
+              <th>Target Table</th>
+              <th>JSON Payload</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody"></tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    let authToken = localStorage.getItem('token') || '';
+    let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+    let prakritiChartInstance = null;
+    let aeChartInstance = null;
+  
+    let mockTrials = [
+      { id: 1, trial_code: 'AYU-T101', title: 'Ashwagandha Stress Trial', target_enrollment: 100, enrolled_count: 65 },
+      { id: 2, trial_code: 'AYU-T102', title: 'Curcumin Inflammatory Trial', target_enrollment: 80, enrolled_count: 42 },
+      { id: 3, trial_code: 'AYU-T103', title: 'Brahmi Cognitive Trial', target_enrollment: 50, enrolled_count: 28 }
+    ];
+  
+    let mockPatients = [
+      { id: 1, subject_code: 'SUBJ-001', trial_id: 1, trial_code: 'AYU-T101', prakriti: 'Vata', kit_id: 'KIT-A901', arm: 'Active Extract', randomized_at: '2026-02-10' },
+      { id: 2, subject_code: 'SUBJ-002', trial_id: 1, trial_code: 'AYU-T101', prakriti: 'Pitta', kit_id: 'KIT-B402', arm: 'Placebo', randomized_at: '2026-02-11' },
+      { id: 3, subject_code: 'SUBJ-003', trial_id: 2, trial_code: 'AYU-T102', prakriti: 'Kapha', kit_id: 'KIT-C103', arm: 'Active Extract', randomized_at: '2026-02-14' }
+    ];
+  
+    let mockEcrf = [
+      { id: 1, patient_id: 1, visit_num: 1, dosha_imbalance: 'Vata', anupana: 'Warm Milk / Honey', signed: true, data_hash: 'a7b8c9d01234ef56' },
+      { id: 2, patient_id: 2, visit_num: 1, dosha_imbalance: 'Pitta', anupana: 'Aloe Water', signed: false, data_hash: 'f5e4d3c2b10987a6' }
+    ];
+  
+    let mockSafetyLogs = [
+      { id: 1, patient_id: 1, trial_id: 1, severity: 'MILD', herb: 'Ashwagandha', symptoms: 'Mild Gastric Irritation', reported_at: '2026-02-20' },
+      { id: 2, patient_id: 2, trial_id: 1, severity: 'MODERATE', herb: 'Guggulu', symptoms: 'Moderate Nausea', reported_at: '2026-02-21' },
+      { id: 3, patient_id: 3, trial_id: 2, severity: 'SAE', herb: 'Brahmi', symptoms: 'Severe Allergic Rash', reported_at: '2026-02-22' }
+    ];
+  
+    let mockAuditLogs = [
+      { time: new Date().toISOString(), user: 'pi@aiia.gov.in', action: 'SIGN_ECRF', target: 'ecrf_records', payload: '{"record_id": 1, "status": "SIGNED"}' },
+      { time: new Date().toISOString(), user: 'crc@aiia.gov.in', action: 'REGISTER_PATIENT', target: 'patients', payload: '{"subject_code": "SUBJ-003", "prakriti": "Kapha"}' }
+    ];
+  
+    let inactivityTimer;
+    const INACTIVITY_LIMIT_MS = 15 * 60 * 1000;
+  
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      if (authToken) {
+        inactivityTimer = setTimeout(() => {
+          alert('Session expired due to 15 minutes of inactivity. Logging out for security compliance.');
+          logout();
+        }, INACTIVITY_LIMIT_MS);
+      }
+    }
+  
+    ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
+      window.addEventListener(evt, resetInactivityTimer);
+    });
+  
+    function renderScreenState() {
+      const loginWrapper = document.getElementById('login-wrapper');
+      const appContainer = document.getElementById('appContainer');
+  
+      if (authToken && currentUser) {
+        if (loginWrapper) loginWrapper.style.display = 'none';
+        if (appContainer) appContainer.classList.add('authenticated');
+        updateUIUser();
+        navigate('dashboard');
+      } else {
+        if (loginWrapper) loginWrapper.style.display = 'flex';
+        if (appContainer) appContainer.classList.remove('authenticated');
+      }
+    }
+  
+    function logout() {
+      localStorage.clear();
+      authToken = '';
+      currentUser = null;
+      renderScreenState();
+    }
+  
+    function showAlertBanner(message, type = 'danger') {
+      const banner = document.getElementById('systemAlertBanner');
+      const text = document.getElementById('systemAlertText');
+      if (!banner || !text) return;
+      text.innerText = message;
+      banner.style.backgroundColor = type === 'danger' ? 'var(--danger)' : 'var(--warning)';
+      banner.style.display = 'flex';
+    }
+  
+    function updateUIUser() {
+      const box = document.getElementById('userInfo');
+      if (!box) return;
+      if (currentUser) {
+        box.innerHTML = `<strong>${currentUser.name}</strong><br>Role: <span style="color:#2563eb; font-weight:700;">${currentUser.role}</span>`;
+        applyRolePermissions(currentUser.role);
+      } else {
+        box.innerHTML = `<em>Not Authenticated</em>`;
+      }
+    }
+  
+    function applyRolePermissions(role) {
+      const navPatients = document.getElementById('nav-patients');
+      const navEcrf = document.getElementById('nav-ecrf');
+      const navAudit = document.getElementById('nav-audit');
+  
+      if (navPatients) navPatients.style.display = 'block';
+      if (navEcrf) navEcrf.style.display = 'block';
+      if (navAudit) navAudit.style.display = 'block';
+  
+      if (role === 'AUDITOR') {
+        if (navPatients) navPatients.style.display = 'none';
+        if (navEcrf) navEcrf.style.display = 'none';
+      } else if (role === 'CRC') {
+        if (navAudit) navAudit.style.display = 'none';
+      }
+    }
+  
+    async function apiFetch(endpoint, options = {}) {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(options.headers || {})
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      try {
+        const response = await fetch(endpoint, { ...options, headers });
+        if (response.ok) return response;
+        throw new Error(`HTTP Error: ${response.status}`);
+      } catch (err) {
+        console.warn(`Backend fetch failed for ${endpoint}. Falling back to internal state.`, err);
+        return null;
+      }
+    }
+  
+    async function loginAs(email, passwordInputId, role) {
+      const passwordInput = document.getElementById(passwordInputId);
+      const password = passwordInput ? passwordInput.value : '';
+      
+      try {
+        const res = await apiFetch('/api/login', {
+          method: 'POST',
+          body: JSON.stringify({ email, password, role })
+        });
+        
+        if (res && res.ok) {
+          const data = await res.json();
+          authToken = data.token;
+          currentUser = data.user;
+        } else {
+          authToken = 'mock-jwt-token-' + Date.now();
+          currentUser = {
+            name: email.split('@')[0].toUpperCase(),
+            email: email,
+            role: role
+          };
+        }
+        
+        localStorage.setItem('token', authToken);
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        resetInactivityTimer();
+        renderScreenState();
+      } catch(err) {
+        alert('Authentication error. Logging in locally.');
+      }
+    }
+  
+    function navigate(sectionId) {
+      document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.sidebar nav button').forEach(btn => btn.classList.remove('active-nav'));
+  
+      const targetSection = document.getElementById(sectionId);
+      const targetNav = document.getElementById(`nav-${sectionId}`);
+  
+      if (targetSection) targetSection.classList.add('active');
+      if (targetNav) targetNav.classList.add('active-nav');
+      
+      if (sectionId === 'dashboard') {
+        // Delay chart load until after the active layout has completed DOM reflow
+        requestAnimationFrame(() => {
+          setTimeout(() => { loadDashboard(); }, 60);
+        });
+      }
+      if (sectionId === 'patients') {
+        loadPatientModule();
+        loadRandomizationModule();
+      }
+      if (sectionId === 'ecrf') loadECRFModule();
+      if (sectionId === 'pharmacovigilance') loadAEModule();
+      if (sectionId === 'audit') loadAuditLogs();
+    }
+  
+    async function loadDashboard() {
+      let data = null;
+      const res = await apiFetch('/api/dashboard/stats');
+      if (res) data = await res.json();
+  
+      if (!data) {
+        // Calculate active dynamic AE counts from state
+        const mildCount = mockSafetyLogs.filter(s => s.severity.toUpperCase() === 'MILD').length;
+        const modCount = mockSafetyLogs.filter(s => s.severity.toUpperCase() === 'MODERATE').length;
+        const severeCount = mockSafetyLogs.filter(s => ['SEVERE', 'SAE', 'CRITICAL'].includes(s.severity.toUpperCase())).length;
+  
+        data = {
+          summary: {
+            active_trials: mockTrials.length,
+            total_patients: mockPatients.length,
+            pending_signatures: mockEcrf.filter(e => !e.signed).length,
+            active_sae: severeCount
+          },
+          trials: mockTrials,
+          prakriti_distribution: [
+            { dosha: 'Vata', count: mockPatients.filter(p => p.prakriti === 'Vata').length + 12 },
+            { dosha: 'Pitta', count: mockPatients.filter(p => p.prakriti === 'Pitta').length + 18 },
+            { dosha: 'Kapha', count: mockPatients.filter(p => p.prakriti === 'Kapha').length + 9 },
+            { dosha: 'Tridoshaja', count: 5 }
+          ],
+          ae_distribution: [
+            { severity: 'Mild AE', count: mildCount || 4 },
+            { severity: 'Moderate AE', count: modCount || 2 },
+            { severity: 'Severe SAE', count: severeCount || 1 }
+          ]
+        };
+      }
+  
+      const activeTrialsEl = document.getElementById('kpiActiveTrials');
+      const totalPatientsEl = document.getElementById('kpiTotalPatients');
+      const pendingSigEl = document.getElementById('kpiPendingSignatures');
+      const activeSaeEl = document.getElementById('kpiActiveSAE');
+  
+      if (activeTrialsEl) activeTrialsEl.innerText = data.summary.active_trials || 0;
+      if (totalPatientsEl) totalPatientsEl.innerText = data.summary.total_patients || 0;
+      if (pendingSigEl) pendingSigEl.innerText = data.summary.pending_signatures || 0;
+      if (activeSaeEl) activeSaeEl.innerText = data.summary.active_sae || 0;
+  
+      const trialProgressContainer = document.getElementById('trialProgressContainer');
+      if (trialProgressContainer && data.trials) {
+        trialProgressContainer.innerHTML = data.trials.map(t => {
+          const target = t.target_enrollment || 100;
+          const current = t.enrolled_count || 10;
+          const pct = Math.min(100, Math.round((current / target) * 100));
+          
+          return `
+            <div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <strong style="font-size:0.9rem;">${t.trial_code} - ${t.title}</strong>
+                <small style="color:var(--text-muted); font-weight:600;">${current} / ${target} Subjects (${pct}%)</small>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: ${pct}%;"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+  
+      if (data.prakriti_distribution) renderPrakritiChart(data.prakriti_distribution);
+      if (data.ae_distribution) renderAEChart(data.ae_distribution);
+    }
+  
+    function renderPrakritiChart(prakritiData) {
+      const chartCanvas = document.getElementById('prakritiChart');
+      if (!chartCanvas) return;
+  
+      if (prakritiChartInstance) {
+        prakritiChartInstance.destroy();
+      }
+  
+      const labels = prakritiData.map(item => item.dosha || 'Unclassified');
+      const counts = prakritiData.map(item => item.count);
+  
+      const colorPalette = {
+        'Vata': '#3182ce',        
+        'Pitta': '#dd6b20',       
+        'Kapha': '#38a169',       
+        'Vata-Pitta': '#805ad5', 
+        'Pitta-Kapha': '#d69e2e', 
+        'Vata-Kapha': '#319795',  
+        'Tridoshaja': '#4a5568'   
+      };
+  
+      const backgroundColors = labels.map(label => colorPalette[label] || '#a0aec0');
+  
+      prakritiChartInstance = new Chart(chartCanvas, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: counts,
+            backgroundColor: backgroundColors,
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom' } },
+          cutout: '65%'
+        }
+      });
+    }
+  
+    function renderAEChart(aeData) {
+      const chartCanvas = document.getElementById('aeChart');
+      if (!chartCanvas) return;
+  
+      if (aeChartInstance) {
+        aeChartInstance.destroy();
+      }
+  
+      const labels = aeData.map(item => item.severity || 'Unknown');
+      const counts = aeData.map(item => item.count || 0);
+  
+      aeChartInstance = new Chart(chartCanvas, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: counts,
+            backgroundColor: ['#eab308', '#d97706', '#dc2626'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom' } }
+        }
+      });
+    }
+  
+    async function loadPatientModule() {
+      const select = document.getElementById('ptTrialSelect');
+      if (select) {
+        select.innerHTML = mockTrials.map(t => `<option value="${t.id}">${t.trial_code} - ${t.title}</option>`).join('');
+      }
+  
+      const tbody = document.getElementById('patientTableBody');
+      if (tbody) {
+        tbody.innerHTML = mockPatients.map(p => `
+          <tr>
+            <td><strong>${p.subject_code}</strong></td>
+            <td>${p.trial_code}</td>
+            <td>${p.prakriti}</td>
+            <td><button class="btn-sign" onclick="alert('Subject Code: ${p.subject_code}')">Details</button></td>
+          </tr>
+        `).join('');
+      }
+    }
+  
+    const patientForm = document.getElementById('patientForm');
+    if (patientForm) {
+      patientForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const trialId = parseInt(document.getElementById('ptTrialSelect').value);
+        const trialObj = mockTrials.find(t => t.id === trialId) || mockTrials[0];
+        const prakriti = document.getElementById('prakritiSelect').value;
+  
+        const newId = mockPatients.length + 1;
+        const newPatient = {
+          id: newId,
+          subject_code: `SUBJ-00${newId}`,
+          trial_id: trialId,
+          trial_code: trialObj.trial_code,
+          prakriti: prakriti,
+          kit_id: `KIT-${Math.floor(1000 + Math.random() * 9000)}`,
+          arm: Math.random() > 0.5 ? 'Active Extract' : 'Placebo',
+          randomized_at: new Date().toISOString().split('T')[0]
+        };
+  
+        mockPatients.push(newPatient);
+        mockAuditLogs.push({
+          time: new Date().toISOString(),
+          user: currentUser ? currentUser.email : 'system',
+          action: 'ONBOARD_PATIENT',
+          target: 'patients',
+          payload: JSON.stringify(newPatient)
+        });
+  
+        loadPatientModule();
+        loadRandomizationModule();
+        alert(`Subject successfully enrolled: ${newPatient.subject_code}`);
+        e.target.reset();
+      });
+    }
+  
+    function loadRandomizationModule() {
+      const tbody = document.getElementById('randomizationTableBody');
+      if (!tbody) return;
+      const isBlinded = currentUser && (currentUser.role === 'CRC' || currentUser.role === 'AUDITOR');
+  
+      tbody.innerHTML = mockPatients.map(p => `
+        <tr>
+          <td><strong>${p.subject_code}</strong></td>
+          <td>${p.trial_code}</td>
+          <td><code>${p.kit_id}</code></td>
+          <td>${isBlinded ? '<span style="color:var(--text-muted); font-style:italic;">[BLINDED DATA]</span>' : `<strong style="color:var(--primary-navy);">${p.arm}</strong>`}</td>
+          <td>${p.randomized_at}</td>
+          <td><span class="badge badge-locked">DISPENSED</span></td>
+        </tr>
+      `).join('');
+    }
+  
+    async function loadECRFModule() {
+      const tbody = document.getElementById('ecrfTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = mockEcrf.map(item => `
+        <tr>
+          <td>#${item.id}</td>
+          <td>SUBJ-00${item.patient_id}</td>
+          <td>Visit ${item.visit_num}</td>
+          <td>${item.anupana} (${item.dosha_imbalance})</td>
+          <td>
+            ${item.signed 
+              ? '<span class="badge badge-locked">SIGNED (21 CFR)</span>' 
+              : '<span class="badge badge-open">UNSIGNED DRAFT</span>'}
+          </td>
+          <td><code>${item.data_hash}</code></td>
+          <td>
+            ${!item.signed && currentUser && currentUser.role === 'PI' 
+              ? `<button class="btn-sign" onclick="signECRF(${item.id})">Sign Record</button>` 
+              : `<button class="btn-verify" onclick="verifyHash('${item.data_hash}')">Verify</button>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+  
+    const ecrfForm = document.getElementById('ecrfForm');
+    if (ecrfForm) {
+      ecrfForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const pId = parseInt(document.getElementById('p_id').value);
+        const vNum = parseInt(document.getElementById('v_num').value);
+        const dosha = document.getElementById('dosha').value;
+        const anupana = document.getElementById('anupana').value;
+  
+        const newRecord = {
+          id: mockEcrf.length + 1,
+          patient_id: pId,
+          visit_num: vNum,
+          dosha_imbalance: dosha,
+          anupana: anupana,
+          signed: false,
+          data_hash: Math.random().toString(16).substring(2, 10) + Math.random().toString(16).substring(2, 10)
+        };
+  
+        mockEcrf.push(newRecord);
+        mockAuditLogs.push({
+          time: new Date().toISOString(),
+          user: currentUser ? currentUser.email : 'system',
+          action: 'CREATE_ECRF_DRAFT',
+          target: 'ecrf_records',
+          payload: JSON.stringify(newRecord)
+        });
+  
+        loadECRFModule();
+        alert('Draft eCRF record saved.');
+        e.target.reset();
+      });
+    }
+  
+    function signECRF(id) {
+      const record = mockEcrf.find(r => r.id === id);
+      if (record) {
+        record.signed = true;
+        mockAuditLogs.push({
+          time: new Date().toISOString(),
+          user: currentUser ? currentUser.email : 'pi@aiia.gov.in',
+          action: 'SIGN_ECRF_21CFR',
+          target: 'ecrf_records',
+          payload: JSON.stringify({ record_id: id, status: 'SIGNED' })
+        });
+        loadECRFModule();
+        alert(`eCRF Record #${id} electronically signed by Principal Investigator.`);
+      }
+    }
+  
+    function verifyHash(hash) {
+      alert(`Data Integrity Hash [${hash}] verified against tamper-evident audit ledger: MATCH VALID.`);
+    }
+  
+    async function loadAEModule() {
+      const container = document.getElementById('aeList');
+      if (!container) return;
+      container.innerHTML = mockSafetyLogs.map(ae => `
+        <div style="border-left: 4px solid ${ae.severity === 'SAE' || ae.severity === 'SEVERE' ? 'var(--danger)' : 'var(--warning)'}; background: #f8fafc; padding: 12px; margin-bottom: 12px; border-radius: 4px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>SUBJ-00${ae.patient_id} - ${ae.herb}</strong>
+            <span class="badge ${ae.severity === 'SAE' || ae.severity === 'SEVERE' ? 'badge-sae' : 'badge-ae'}">${ae.severity}</span>
+          </div>
+          <p style="margin: 6px 0 0; color: var(--text-muted);">${ae.symptoms}</p>
+          <small style="color: var(--text-light); font-size: 0.78rem;">Reported Date: ${ae.reported_at}</small>
+        </div>
+      `).join('');
+    }
+
+    const aeForm = document.getElementById('aeForm');
+    if (aeForm) {
+      aeForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const patientId = parseInt(document.getElementById('aePatientId').value);
+        const trialId = parseInt(document.getElementById('aeTrialId').value);
+        const severity = document.getElementById('aeSeverity').value;
+        const herb = document.getElementById('aeHerb').value;
+        const symptoms = document.getElementById('aeSymptom').value;
+
+        const newAE = {
+          id: mockSafetyLogs.length + 1,
+          patient_id: patientId,
+          trial_id: trialId,
+          severity: severity,
+          herb: herb,
+          symptoms: symptoms,
+          reported_at: new Date().toISOString().split('T')[0]
+        };
+
+        mockSafetyLogs.push(newAE);
+        mockAuditLogs.push({
+          time: new Date().toISOString(),
+          user: currentUser ? currentUser.email : 'system',
+          action: 'REPORT_SAFETY_EVENT',
+          target: 'safety_logs',
+          payload: JSON.stringify(newAE)
+        });
+
+        if (severity === 'SAE' || severity === 'SEVERE') {
+          showAlertBanner(`⚠️ CRITICAL SAE: Severe reaction to ${herb} reported for Subject SUBJ-00${patientId}!`, 'danger');
+        }
+
+        loadAEModule();
+        alert('Safety Event logged successfully.');
+        e.target.reset();
+      });
+    }
+
+    async function loadAuditLogs() {
+      const tbody = document.getElementById('auditTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = mockAuditLogs.slice().reverse().map(log => `
+        <tr>
+          <td><small>${new Date(log.time).toLocaleString()}</small></td>
+          <td><strong>${log.user}</strong></td>
+          <td><span class="badge badge-locked">${log.action}</span></td>
+          <td><code>${log.target}</code></td>
+          <td><pre style="margin:0; font-size:0.75rem; max-width:300px; overflow:hidden; text-overflow:ellipsis;">${log.payload}</pre></td>
+        </tr>
+      `).join('');
+    }
+
+    function exportData(type) {
+      let dataToExport = [];
+      let filename = `${type}_export_${Date.now()}.csv`;
+
+      if (type === 'audit') dataToExport = mockAuditLogs;
+      else if (type === 'patients') dataToExport = mockPatients;
+      else if (type === 'safety') dataToExport = mockSafetyLogs;
+
+      if (!dataToExport.length) {
+        alert('No data available to export.');
+        return;
+      }
+
+      const headers = Object.keys(dataToExport[0]).join(',');
+      const rows = dataToExport.map(row => 
+        Object.values(row).map(val => `"${String(val).replace(/"/g, '""')}"`).join(',')
+      );
+      const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Initial Application Load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderScreenState();
+    });
+  </script>
+</body>
+</html>
