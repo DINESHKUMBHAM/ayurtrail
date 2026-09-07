@@ -1,0 +1,99 @@
+/* ==========================================================================
+   Reset, typography, form controls and tables.
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--bg-ash);
+  color: var(--text-main);
+  line-height: 1.5;
+  height: 100vh;
+  overflow: hidden;
+}
+
+h1 {
+  font-size: 1.6rem;
+  color: var(--obsidian-dark);
+  margin-bottom: 24px;
+  font-weight: 700;
+  border-bottom: 2px solid var(--border-ash);
+  padding-bottom: 10px;
+}
+
+/* Form controls */
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 0.88rem;
+  color: var(--text-main);
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border-ash);
+  border-radius: 6px;
+  background-color: #f8fafc;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 12px;
+  background: #ffffff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border-ash);
+}
+
+th, td {
+  padding: 11px 14px;
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+th {
+  background: var(--obsidian-dark);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-ash);
+}
+
+td {
+  border-bottom: 1px solid var(--surface-ash);
+  color: var(--text-main);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:nth-child(even) td {
+  background-color: #f8fafc;
+}
+
+tr:hover td {
+  background-color: #eff6ff;
+}

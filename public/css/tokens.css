@@ -1,0 +1,32 @@
+/* ==========================================================================
+   AIIA CTMS - Design tokens (Navy, Obsidian & Slate Ash)
+   The single source of truth for colour, elevation and radius.
+   ========================================================================== */
+:root {
+  --primary-navy: #1e3a8a;
+  --primary-blue: #2563eb;
+  --primary-hover: #1d4ed8;
+
+  --obsidian-dark: #020617;
+  --obsidian-sidebar: #0f172a;
+
+  --bg-ash: #f1f5f9;
+  --card-white: #ffffff;
+  --surface-ash: #e2e8f0;
+  --border-ash: #cbd5e1;
+
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-light: #94a3b8;
+
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --warning: #d97706;
+  --success: #16a34a;
+  --info: #0284c7;
+
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.12);
+  --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.18);
+  --radius: 8px;
+}

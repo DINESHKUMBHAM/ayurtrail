@@ -1,0 +1,161 @@
+/* ==========================================================================
+   Page shells: the full-screen login, the sidebar/content workspace, and the
+   section router's show/hide mechanics.
+   ========================================================================== */
+
+/* Full-screen login */
+#login-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, var(--obsidian-dark) 0%, var(--obsidian-sidebar) 50%, var(--primary-navy) 100%);
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.login-header {
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 30px;
+}
+
+.login-header h1 {
+  font-size: 2rem;
+  border: none;
+  padding: 0;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.login-header p {
+  color: var(--text-light);
+  font-size: 1rem;
+}
+
+.login-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 900px;
+  width: 100%;
+}
+
+/* Main workspace */
+.app-container {
+  display: none;
+  height: 100vh;
+  width: 100vw;
+}
+
+.app-container.authenticated {
+  display: flex;
+}
+
+/* Sidebar navigation */
+.sidebar {
+  width: 270px;
+  background: var(--obsidian-sidebar);
+  color: #ffffff;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.sidebar h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.user-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  font-size: 0.88rem;
+  color: #cbd5e1;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.sidebar button {
+  width: 100%;
+  padding: 11px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.sidebar button:hover, .sidebar button.active-nav {
+  background: var(--primary-navy);
+  color: #ffffff;
+  border-color: var(--primary-blue);
+  transform: translateX(3px);
+}
+
+.btn-logout {
+  background: rgba(220, 38, 38, 0.2) !important;
+  border-color: rgba(220, 38, 38, 0.4) !important;
+  color: #fca5a5 !important;
+  margin-top: auto;
+}
+
+.btn-logout:hover {
+  background: var(--danger) !important;
+  color: #ffffff !important;
+}
+
+/* Content area */
+.content {
+  flex: 1;
+  padding: 32px 40px;
+  overflow-y: auto;
+  background-color: var(--bg-ash);
+}
+
+.page-section {
+  display: none;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-section.active {
+  display: block;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.grid-kpi {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.grid-span-2 {
+  grid-column: span 2;
+}
