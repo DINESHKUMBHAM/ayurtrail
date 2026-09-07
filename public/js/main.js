@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   bindPatientForm();
   bindEcrfForm();
   bindAeForm();
+  bindOrgForm();
+  bindFeedbackForm();
 
   const alertClose = document.getElementById('systemAlertClose');
   if (alertClose) alertClose.addEventListener('click', hideAlertBanner);

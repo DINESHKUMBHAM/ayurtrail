@@ -3,7 +3,8 @@
    section router's show/hide mechanics.
    ========================================================================== */
 
-/* Full-screen login */
+/* --- Full-screen login ------------------------------------------------ */
+
 #login-wrapper {
   display: flex;
   flex-direction: column;
@@ -11,28 +12,57 @@
   justify-content: center;
   min-height: 100vh;
   width: 100vw;
-  background: linear-gradient(135deg, var(--obsidian-dark) 0%, var(--obsidian-sidebar) 50%, var(--primary-navy) 100%);
-  padding: 30px;
+  padding: 40px 30px;
   overflow-y: auto;
+  position: relative;
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(37, 99, 235, 0.35), transparent 60%),
+    radial-gradient(900px 500px at 90% 110%, rgba(13, 148, 136, 0.28), transparent 60%),
+    linear-gradient(160deg, #0a1120 0%, #101a2e 45%, #16244a 100%);
+}
+
+/* Faint grid texture over the gradient. */
+#login-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  pointer-events: none;
+}
+
+#login-wrapper > * {
+  position: relative;
+  z-index: 1;
 }
 
 .login-header {
   text-align: center;
-  color: #ffffff;
-  margin-bottom: 30px;
+  color: var(--text-inverse);
+  margin-bottom: 32px;
+  max-width: 640px;
 }
 
 .login-header h1 {
-  font-size: 2rem;
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-inverse);
   border: none;
   padding: 0;
-  color: #ffffff;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.login-header h1::after {
+  display: none;
 }
 
 .login-header p {
-  color: var(--text-light);
-  font-size: 1rem;
+  color: #93a4bf;
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .login-grid {
@@ -43,7 +73,16 @@
   width: 100%;
 }
 
-/* Main workspace */
+/* Login cards read as glass over the gradient. */
+.login-grid .card {
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-xl);
+  margin-bottom: 0;
+}
+
+/* --- Main workspace --------------------------------------------------- */
+
 .app-container {
   display: none;
   height: 100vh;
@@ -54,108 +93,218 @@
   display: flex;
 }
 
-/* Sidebar navigation */
+/* --- Sidebar ---------------------------------------------------------- */
+
 .sidebar {
-  width: 270px;
-  background: var(--obsidian-sidebar);
-  color: #ffffff;
-  padding: 24px 18px;
+  width: 268px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, var(--sidebar-bg) 0%, var(--sidebar-bg-end) 100%);
+  color: var(--text-inverse);
+  padding: 22px 16px;
   display: flex;
   flex-direction: column;
-  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+  border-right: 1px solid rgba(0, 0, 0, 0.4);
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.04), 6px 0 24px rgba(2, 6, 23, 0.28);
   z-index: 10;
+  overflow-y: auto;
 }
 
 .sidebar h2 {
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #ffffff;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 12px;
+  letter-spacing: 0.01em;
+  color: var(--text-inverse);
+  padding-bottom: 16px;
   margin-bottom: 16px;
+  border-bottom: 1px solid var(--sidebar-border);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+/* Brand dot before the product name. */
+.sidebar h2::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  background: var(--accent-500);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.22);
+  flex-shrink: 0;
 }
 
 .user-card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(148, 163, 184, 0.09);
+  border: 1px solid var(--sidebar-border);
   padding: 12px 14px;
   border-radius: var(--radius);
-  margin-bottom: 20px;
-  font-size: 0.88rem;
-  color: #cbd5e1;
+  margin-bottom: 18px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--sidebar-text);
 }
 
 .sidebar nav {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   flex: 1;
 }
 
-.sidebar button {
+.sidebar nav button {
   width: 100%;
-  padding: 11px 14px;
-  background: rgba(255, 255, 255, 0.04);
-  color: #e2e8f0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius);
+  padding: 10px 13px;
+  background: transparent;
+  color: var(--sidebar-text);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   text-align: left;
-  font-size: 0.9rem;
+  font-family: inherit;
+  font-size: 0.86rem;
   font-weight: 500;
-  transition: all 0.2s ease;
+  position: relative;
+  transition: background-color var(--dur-fast) var(--ease),
+              color var(--dur-fast) var(--ease);
 }
 
-.sidebar button:hover, .sidebar button.active-nav {
-  background: var(--primary-navy);
-  color: #ffffff;
-  border-color: var(--primary-blue);
-  transform: translateX(3px);
+.sidebar nav button:hover {
+  background: var(--sidebar-hover);
+  color: var(--text-inverse);
+}
+
+.sidebar nav button.active-nav {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.28), rgba(37, 99, 235, 0.10));
+  color: var(--text-inverse);
+  font-weight: 600;
+}
+
+/* Active indicator rail. */
+.sidebar nav button.active-nav::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  border-radius: 0 var(--radius-full) var(--radius-full) 0;
+  background: var(--accent-500);
+}
+
+/* Group heading inside the sidebar nav ("Extra", "Portal Links") */
+.nav-group-label {
+  margin-top: 20px;
+  margin-bottom: 4px;
+  padding: 14px 13px 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sidebar-text-dim);
+  border-top: 1px solid var(--sidebar-border);
+}
+
+/* External portal links. Flatter than the section buttons so they do not
+   read as in-app navigation. */
+.nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 13px;
+  border-radius: var(--radius-sm);
+  color: var(--sidebar-text-dim);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: background-color var(--dur-fast) var(--ease),
+              color var(--dur-fast) var(--ease);
+}
+
+.nav-link:hover {
+  background: var(--sidebar-hover);
+  color: var(--text-inverse);
+  text-decoration: none;
+}
+
+.nav-link-icon {
+  font-size: 0.72rem;
+  opacity: 0.55;
+  flex-shrink: 0;
+  transition: transform var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
+}
+
+.nav-link:hover .nav-link-icon {
+  opacity: 1;
+  transform: translate(1px, -1px);
 }
 
 .btn-logout {
-  background: rgba(220, 38, 38, 0.2) !important;
-  border-color: rgba(220, 38, 38, 0.4) !important;
-  color: #fca5a5 !important;
   margin-top: auto;
+  background: rgba(220, 38, 38, 0.12) !important;
+  border: 1px solid rgba(248, 113, 113, 0.28) !important;
+  color: #fca5a5 !important;
+  font-weight: 600 !important;
 }
 
 .btn-logout:hover {
   background: var(--danger) !important;
-  color: #ffffff !important;
+  border-color: var(--danger) !important;
+  color: var(--text-inverse) !important;
 }
 
-/* Content area */
+.btn-logout::before {
+  display: none !important;
+}
+
+/* --- Content area ----------------------------------------------------- */
+
 .content {
   flex: 1;
-  padding: 32px 40px;
+  padding: 30px 38px 48px;
   overflow-y: auto;
-  background-color: var(--bg-ash);
+  background-color: var(--bg-app);
+  scroll-behavior: smooth;
 }
 
 .page-section {
   display: none;
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
 }
 
 .page-section.active {
   display: block;
+  animation: section-in var(--dur) var(--ease);
 }
+
+@keyframes section-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* --- Grids ------------------------------------------------------------ */
 
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
-
-.grid-kpi {
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 22px;
 }
 
 .grid-span-2 {
   grid-column: span 2;
+}
+
+@media (max-width: 900px) {
+  .grid,
+  .login-grid {
+    grid-template-columns: 1fr;
+  }
+  .grid-span-2 {
+    grid-column: span 1;
+  }
+  .content {
+    padding: 24px 20px 40px;
+  }
 }

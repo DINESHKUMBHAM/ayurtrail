@@ -12,7 +12,12 @@ const HIDDEN_NAV_BY_ROLE = {
   CRC: ['nav-audit']
 };
 
-const ALL_NAV_IDS = ['nav-dashboard', 'nav-patients', 'nav-ecrf', 'nav-pharmacovigilance', 'nav-audit'];
+// The Extra group (organizations, about, feedback) is visible to every role,
+// so it is listed here but never appears in HIDDEN_NAV_BY_ROLE.
+const ALL_NAV_IDS = [
+  'nav-dashboard', 'nav-patients', 'nav-ecrf', 'nav-pharmacovigilance', 'nav-audit',
+  'nav-organizations', 'nav-about', 'nav-feedback'
+];
 
 let inactivityTimer;
 

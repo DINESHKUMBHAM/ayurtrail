@@ -16,7 +16,10 @@ const SECTION_LOADERS = {
   },
   ecrf: () => loadEcrfTable(),
   pharmacovigilance: () => loadAEModule(),
-  audit: () => fetchAuditLogs()
+  audit: () => fetchAuditLogs(),
+  organizations: () => loadOrganizations(),
+  // 'about' is static markup and needs no loader.
+  feedback: () => {}
 };
 
 function navigate(sectionId) {
