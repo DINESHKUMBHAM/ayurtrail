@@ -1,0 +1,315 @@
+/* ==========================================================================
+   Reusable pieces: cards, KPI tiles, progress bars, buttons, badges, charts.
+   ========================================================================== */
+
+/* Cards */
+.card {
+  background: var(--card-white);
+  padding: 24px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-ash);
+  margin-bottom: 24px;
+}
+
+.card h3, .card h4 {
+  color: var(--obsidian-dark);
+  font-size: 1.15rem;
+  margin-bottom: 12px;
+}
+
+.card p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* KPI tiles */
+.stat-card {
+  background: var(--card-white);
+  border: 1px solid var(--border-ash);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-card small {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.stat-card h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+.stat-navy  { color: var(--primary-navy); }
+.stat-blue  { color: var(--primary-blue); }
+.stat-warn  { color: var(--warning); }
+.stat-danger { color: var(--danger); }
+
+/* Progress bars */
+.progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.progress-row-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.progress-bar-bg {
+  background-color: var(--surface-ash);
+  border-radius: 6px;
+  height: 12px;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progress-bar-fill {
+  background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-navy) 100%);
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.5s ease-in-out;
+}
+
+/* Buttons */
+.btn-submit {
+  background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
+  color: #ffffff;
+  border: none;
+  padding: 11px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  width: 100%;
+  transition: opacity 0.2s, transform 0.1s;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-submit:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.btn-submit-info { background: var(--info); }
+.btn-submit-dark { background: var(--obsidian-dark); }
+
+.btn-sign {
+  background: var(--primary-navy);
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.btn-sign:hover {
+  background: var(--primary-blue);
+}
+
+.btn-verify {
+  background: var(--info);
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #ffffff;
+  border: none;
+  padding: 11px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  width: 100%;
+}
+
+.btn-danger:hover {
+  background: var(--danger-hover);
+}
+
+.btn-export {
+  background: var(--obsidian-dark);
+  color: #ffffff;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.btn-export:hover {
+  background: var(--primary-navy);
+}
+
+.export-actions {
+  margin-bottom: 20px;
+}
+
+/* Inline table action buttons */
+.btn-inline {
+  background: var(--primary-navy);
+  color: #ffffff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.btn-inline:hover { background: var(--primary-blue); }
+
+.btn-pdf {
+  display: inline-block;
+  background: var(--obsidian-dark);
+  color: #ffffff;
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.btn-pdf:hover { background: var(--primary-navy); }
+
+.btn-refresh {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0 0 0 4px;
+}
+
+/* Badges */
+.badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  display: inline-block;
+  letter-spacing: 0.3px;
+}
+
+.badge-locked { background: var(--success); }
+.badge-open { background: var(--warning); }
+.badge-sae { background: var(--danger); }
+.badge-ae { background: #eab308; color: var(--obsidian-dark); }
+.badge-verified { background: #059669; }
+.badge-tampered { background: #b91c1c; }
+.badge-neutral { background: var(--text-muted); }
+.badge-blinded { background: var(--warning); }
+
+/* System alert banner */
+.alert-banner {
+  display: none;
+  padding: 14px 20px;
+  background-color: var(--danger);
+  color: #ffffff;
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.alert-banner.visible { display: flex; }
+
+.alert-banner-close {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.role-tag {
+  color: var(--primary-blue);
+  font-weight: 700;
+}
+
+/* Login error message */
+.login-error {
+  display: none;
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  max-width: 900px;
+  width: 100%;
+}
+
+.login-error.visible { display: block; }
+
+/* Safety event log entries */
+.ae-entry {
+  background: #f8fafc;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 4px;
+  border-left: 4px solid var(--warning);
+}
+
+.ae-entry.is-serious { border-left-color: var(--danger); }
+
+.ae-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ae-entry p {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+}
+
+/* Charts */
+.chart-box {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  height: 280px;
+  margin: 0 auto;
+}

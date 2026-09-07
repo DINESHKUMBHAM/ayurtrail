@@ -1,0 +1,47 @@
+/* ==========================================================================
+   Small helpers. These replace the Bootstrap utility classes the old
+   public/app.js rendered -- Bootstrap was never actually loaded by the page.
+   ========================================================================== */
+
+.text-muted { color: var(--text-muted); }
+.text-light { color: var(--text-light); }
+.text-danger { color: var(--danger); }
+.text-center { text-align: center; }
+.text-small { font-size: 0.8rem; }
+.text-tiny { font-size: 0.75rem; }
+
+.cell-message {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 18px 14px;
+}
+
+.cell-message.is-error { color: var(--danger); }
+
+.payload-cell {
+  margin: 0;
+  font-size: 0.75rem;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre-wrap;
+}
+
+.hidden { display: none !important; }
+
+/* Indeterminate spinner used while a hash verification is in flight */
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--border-ash);
+  border-top-color: var(--primary-blue);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
